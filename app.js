@@ -36,35 +36,35 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(Driver.authenticate()));
-passport.use(new LocalStrategy(Dealer.authenticate()));
+passport.use('Driver', new LocalStrategy(Driver.authenticate()));
+passport.use('Dealer', new LocalStrategy(Dealer.authenticate()));
 
 passport.serializeUser(Driver.serializeUser());
-passport.deserializeUser(Driver.deserializeUser());
-
 passport.serializeUser(Dealer.serializeUser());
+
+passport.deserializeUser(Driver.deserializeUser());
 passport.deserializeUser(Dealer.deserializeUser());
 
 app.set('view engine', 'ejs');
 app.set('/views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+const isLoggedIn = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl;
+        req.flash('error', 'You need to Login First!');
+        return res.redirect('/signin');
+    }
+    next();
+}
 
 app.get('/', (req, res) => {
     res.render('index')
-})
-
-app.get('/signindealer', (req, res) => {
-    res.render('signinDealer');
-})
-
-app.get('/signindriver', (req, res) => {
-    res.render('signinDriver');
-})
-
-app.post('/signindriver', passport.authenticate('local', { failureFlash: true, failureRedirect: '/signin' }), (req, res) => {
-    const redirectUrl = req.session.returnTo || '/';
-    delete req.session.returnTo;
-    res.redirect(redirectUrl);
 })
 
 app.get('/registerdriver', (req, res) => {
@@ -125,6 +125,34 @@ app.post('/registerdealer', async (req, res) => {
         console.log(e)
         res.redirect('/registerdealer')
     }
+})
+
+app.get('/signindealer', (req, res) => {
+    res.render('signinDealer');
+})
+
+app.post('/signindealer', passport.authenticate('Dealer', { failureFlash: true, failureRedirect: '/signindealer' }), (req, res) => {
+    req.flash('success', 'Welcome Back!');
+    const redirectUrl = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
+})
+
+app.get('/signindriver', (req, res) => {
+    res.render('signinDriver');
+})
+
+app.post('/signindriver', passport.authenticate('Driver', { failureFlash: true, failureRedirect: '/signindriver' }), (req, res) => {
+    req.flash('success', 'Welcome Back!');
+    const redirectUrl = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
+})
+
+app.get('/logout', (req, res) => {
+    req.logout();
+    req.flash('success', 'Logged Out!');
+    res.redirect('/');
 })
 
 const port = 3000;

@@ -14,31 +14,36 @@
                 <!-- <li class="nav-item">
                     <a class="nav-link" href="courses">Courses</a>
                 </li> -->
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-decoration-none" id="navbarScrollingDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Register
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-                        <li>
-                            <a class="dropdown-item" href="/registerdealer">As Dealer</a>
-                            <a class="dropdown-item" href="/registerdriver">As Driver</a>
+                <%if(!currentUser){ %>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-decoration-none" id="navbarScrollingDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Register
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                            <li>
+                                <a class="dropdown-item" href="/registerdealer">As Dealer</a>
+                                <a class="dropdown-item" href="/registerdriver">As Driver</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-decoration-none" id="navbarScrollingDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Signin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                            <li>
+                                <a class="dropdown-item" href="/signindealer">Dealer</a>
+                                <a class="dropdown-item" href="/signindriver">Driver</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <% } else{ %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Logout</a>
                         </li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-decoration-none" id="navbarScrollingDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Signin
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-                        <li>
-                            <a class="dropdown-item" href="/signindealer">Dealer</a>
-                            <a class="dropdown-item" href="/signindriver">Driver</a>
-                        </li>
-                    </ul>
-                </li>
+                        <% } %>
 
             </ul>
         </div>
