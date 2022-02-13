@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const DealerSchema = new Schema({
     name: String,
-    mobileNumber: Number,
+    mobileNumber: String,
     natOfMat: String,
     weightOfMat: String,
     quantity: String,
