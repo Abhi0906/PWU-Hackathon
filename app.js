@@ -40,14 +40,45 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use('Driver', new LocalStrategy(Driver.authenticate()));
-passport.use('Dealer', new LocalStrategy(Dealer.authenticate()));
+// passport.use('Driver', new LocalStrategy(Driver.authenticate()));
+// passport.use('Dealer', new LocalStrategy(Dealer.authenticate()));
 
-passport.serializeUser(Driver.serializeUser());
-passport.serializeUser(Dealer.serializeUser());
+// passport.serializeUser(Driver.serializeUser());
+// passport.serializeUser(Dealer.serializeUser());
 
-passport.deserializeUser(Driver.deserializeUser());
-passport.deserializeUser(Dealer.deserializeUser());
+// passport.deserializeUser(Driver.deserializeUser());
+// passport.deserializeUser(Dealer.deserializeUser());
+passport.use('Driver', new LocalStrategy(function (username, password, done) {
+    Driver.findOne({ username: username }, function (err, user) {
+        // ...
+        return done(null, user);
+    });
+}));
+
+passport.use('Dealer', new LocalStrategy(function (username, password, done) {
+    Dealer.findOne({ username: username }, function (err, user) {
+        // ...
+        return done(null, user);
+    });
+}));
+
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    Driver.findById(id, function (err, user) {
+        if (err) done(err);
+        if (user) {
+            done(null, user);
+        } else {
+            Dealer.findById(id, function (err, user) {
+                if (err) done(err);
+                done(null, user);
+            })
+        }
+    })
+});
 
 app.set('view engine', 'ejs');
 app.set('/views', path.join(__dirname, 'views'))
