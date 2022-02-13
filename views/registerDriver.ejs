@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Register</title>
+</head>
+
+<body>
+    <%- include('../partials/navbar') %>
+        <h1>Register Driver</h1>
+
+        <form action="/registerdriver" method="POST">
+
+            <div>
+                <label for="drUsername">Username</label>
+                <input type="text" id="drUsername" name="newDriver[username]" required>
+            </div>
+            <div>
+                <label for="drPassword">Password</label>
+                <input type="password" name="newDriver[password]" id="drPassword" required>
+            </div>
+
+            <h2>Driver Details</h2>
+            <div>
+                <label for="drEmail">Email</label>
+                <input type="email" name="newDriver[email]" id="drEmail" required>
+            </div>
+
+            <div>
+                <label for="drName">Name</label>
+                <input type="text" id="drName" name="newDriver[name]" required>
+            </div>
+
+            <div>
+                <label for="drAge">Age</label>
+                <input type="number" id="drAge" name="newDriver[age]" required>
+            </div>
+            <div>
+                <label for="truckNo">Truck Number</label>
+                <input type="text" id="truckNo" name="newDriver[truckNo]" required>
+            </div>
+            <div>
+                <label for="drMobNo">Mobile Number</label>
+                <input type="text" id="drMobNo" name="newDriver[drMobNo]" required>
+            </div>
+            <div>
+                <label for="truckCap">Truck Capacity</label>
+                <input type="text" id="truckCap" name="newDriver[truckCap]" required>
+            </div>
+
+            <div>
+                <label for="transporterName">Transporter Name</label>
+                <input type="text" id="transporterName" name="newDriver[transporterName]" required>
+            </div>
+
+            <div>
+                <label for="route1state">Route 1 State</label>
+                <input type="text" id="route1state" name="newDriver[route1state]" required>
+            </div>
+            <div>
+                <label for="route1city">Route 1 City</label>
+                <input type="text" id="route1city" name="newDriver[route1city]" required>
+            </div>
+            <div>
+                <label for="route2state">Route 2 State</label>
+                <input type="text" id="route2state" name="newDriver[route2state]" required>
+            </div>
+            <div>
+                <label for="route2city">Route 2 State</label>
+                <input type="text" id="route2city" name="newDriver[route2city]" required>
+            </div>
+            <div>
+                <label for="route3state">Route 3 State</label>
+                <input type="text" id="route3state" name="newDriver[route3state]" required>
+            </div>
+            <div>
+                <label for="route3city">Route 3 State</label>
+                <input type="text" id="route3city" name="newDriver[route3city]" required>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-danger" type="reset">Reset</button>
+            </div>
+        </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+</body>
+
+</html>
