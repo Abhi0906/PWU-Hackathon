@@ -6,6 +6,7 @@ const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const flash = require('connect-flash');
 const Driver = require('./models/driver');
 const Dealer = require('./models/dealer');
 
@@ -31,6 +32,8 @@ const sessionConfig = {
     }
 }
 app.use(session(sessionConfig));
+app.use(flash());
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(Driver.authenticate()));
@@ -48,6 +51,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
     res.render('index')
+})
+
+app.get('/signindealer', (req, res) => {
+    res.render('signinDealer');
+})
+
+app.get('/signindriver', (req, res) => {
+    res.render('signinDriver');
+})
+
+app.post('/signindriver', passport.authenticate('local', { failureFlash: true, failureRedirect: '/signin' }), (req, res) => {
+    const redirectUrl = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
 })
 
 app.get('/registerdriver', (req, res) => {
