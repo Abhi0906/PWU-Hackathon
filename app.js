@@ -9,14 +9,14 @@ const LocalStrategy = require('passport-local');
 const flash = require('connect-flash');
 const Driver = require('./models/driver');
 const Dealer = require('./models/dealer');
+const MongoStore = require('connect-mongo')
+const dotenv = require('dotenv')
+const connectDB = require('./config/db')
 
-const dbUrl = 'mongodb://localhost:27017/hackathon';
-mongoose.connect(dbUrl);
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-    console.log("Database Connected");
-});
+// Load config
+dotenv.config({ path: './config/config.env' })
+
+connectDB()
 
 const app = express();
 app.engine('ejs', ejsMate);
@@ -27,9 +27,13 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: true,
     cookie: {
+        httpOnly: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
-    }
+    },
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI
+    })
 }
 app.use(session(sessionConfig));
 app.use(flash());
@@ -157,5 +161,5 @@ app.get('/logout', (req, res) => {
 
 const port = 3000;
 app.listen(port, () => {
-    console.log(`Connected to database! Port: ${port}`)
+    console.log(`Connected to Port: ${port}`)
 });
