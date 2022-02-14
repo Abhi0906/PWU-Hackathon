@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Dealer = require('./dealer');
 const passportLocalMongoose = require('passport-local-mongoose');
 const Schema = mongoose.Schema;
 
@@ -15,6 +16,12 @@ const DealerSchema = new Schema({
         required: true,
         unique: true
     },
+    drivers: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Driver'
+        }
+    ]
 
 });
 

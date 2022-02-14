@@ -19,8 +19,9 @@
 
             <li>
                 <%= driver.username %>
-                    <form action="post">
-
+                    <form action="/book" method="POST">
+                        <input type="hidden" name="driverId" value="<%=driver._id%>">
+                        <button class="btn btn-success">Book</button>
                     </form>
             </li>
 

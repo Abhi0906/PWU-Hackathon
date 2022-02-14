@@ -12,6 +12,7 @@ const Dealer = require('./models/dealer');
 const MongoStore = require('connect-mongo')
 const dotenv = require('dotenv')
 const connectDB = require('./config/db')
+const nodemailer = require('nodemailer');
 
 // Load config
 dotenv.config({ path: './config/config.env' })
@@ -35,6 +36,7 @@ const sessionConfig = {
         mongoUrl: process.env.MONGO_URI
     })
 }
+
 app.use(session(sessionConfig));
 app.use(flash());
 
@@ -188,6 +190,77 @@ app.post('/signindealer', passport.authenticate('Dealer', { failureFlash: true, 
     res.redirect(redirectUrl);
 })
 
+// app.post('/signindealerOTP', (req, res) => {
+//     req.flash('success', 'Welcome Back!');
+//     const redirectUrl = req.session.returnTo || '/indexdealer';
+//     delete req.session.returnTo;
+//     res.redirect(redirectUrl);
+
+// })
+
+app.post('/signindealerOTP', (req, res) => {
+    const otp = Math.floor(Math.random() * 10000) + 10000;
+    const output = `
+    <p>You have a new contact request</p>
+    <h3>Contact Details</h3>
+    <ul>
+      <li>Email: ${req.body.email}</li>
+    </ul>
+    <h3>Message</h3>
+    <p>${req.body.message}</p>
+    ${otp}
+  `;
+
+    // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: 'ironcommander2000@gmail.com', // generated ethereal user
+            pass: 'Lks@1234'  // generated ethereal password
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: '"PortWithUs" <ironcommander2000@gmail.com>', // sender address
+        to: req.body.email, // list of receivers
+        subject: 'PortWithUs OTP Verification Mail', // Subject line
+        text: 'This is the OTP', // plain text body
+        html: output // html body
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+        // res.render("index", { layout: false, msg: "Email has been sent" });
+        res.render('verifyOtp', { otp });
+    });
+});
+
+app.post('/verifyDealerOTP', (req, res) => {
+    console.log(req.body.otp)
+    console.log(req.body.otpInput)
+    if (req.body.otp === req.body.otpInput) {
+        console.log("Lessssssss GOOOOOO!!!")
+        res.redirect('/')
+    }
+    else {
+        console.log("Go Fuck your self!!!!")
+        res.redirect('/signindealer');
+    }
+
+})
+
 app.get('/signindriver', (req, res) => {
     res.render('signinDriver');
 })
@@ -223,6 +296,18 @@ app.post('/indexdealer', (req, res) => {
 app.get('/logout', (req, res) => {
     req.logout();
     req.flash('success', 'Logged Out!');
+    res.redirect('/');
+})
+
+
+app.post('/book', async (req, res) => {
+    const driver = await Driver.findById(req.body.driverId);
+    const driverID = driver._id;
+    const dealer = await Dealer.findById(req.user._id);
+    dealer.drivers.push(driverID);
+    driver.dealers.push(req.user._id);
+    await dealer.save();
+    await driver.save();
     res.redirect('/');
 })
 
