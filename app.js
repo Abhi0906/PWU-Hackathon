@@ -117,12 +117,19 @@ app.post('/registerdriver', async (req, res) => {
             mobileNumber: req.body.newDriver.mobileNo,
             truckCapacity: req.body.newDriver.truckCap,
             transporterName: req.body.newDriver.transporterName,
-            route1state: req.body.newDriver.route1state,
-            route1city: req.body.newDriver.route1city,
-            route2state: req.body.newDriver.route2state,
-            route2city: req.body.newDriver.route2city,
-            route3state: req.body.newDriver.route3state,
-            route3city: req.body.newDriver.route3city
+            from1state: req.body.newDriver.from1state,
+            from1city: req.body.newDriver.from1city,
+            to1state: req.body.newDriver.to1state,
+            to1city: req.body.newDriver.to1city,
+            from2state: req.body.newDriver.from2state,
+            from2city: req.body.newDriver.from2city,
+            to2state: req.body.newDriver.to2state,
+            to2city: req.body.newDriver.to2city,
+            from3state: req.body.newDriver.from3state,
+            from3city: req.body.newDriver.from3city,
+            to3state: req.body.newDriver.to3state,
+            to3city: req.body.newDriver.to3city,
+
         })
         const { password } = req.body.newDriver;
         const registeredDriver = await Driver.register(driver, password);
@@ -166,9 +173,17 @@ app.get('/signindealer', (req, res) => {
     res.render('signinDealer');
 })
 
+app.get('/test', (req, res) => {
+    res.render('test');
+})
+
+app.get('/test2', (req, res) => {
+    res.render('test2');
+})
+
 app.post('/signindealer', passport.authenticate('Dealer', { failureFlash: true, failureRedirect: '/signindealer' }), (req, res) => {
     req.flash('success', 'Welcome Back!');
-    const redirectUrl = req.session.returnTo || '/';
+    const redirectUrl = req.session.returnTo || '/indexdealer';
     delete req.session.returnTo;
     res.redirect(redirectUrl);
 })
@@ -182,6 +197,27 @@ app.post('/signindriver', passport.authenticate('Driver', { failureFlash: true, 
     const redirectUrl = req.session.returnTo || '/';
     delete req.session.returnTo;
     res.redirect(redirectUrl);
+})
+
+app.get('/indexdealer', async (req, res) => {
+    const currentuser = req.user;
+    const drivers = await Driver.find({
+        $or: [{
+            $or: [{ $and: [{ from1state: currentuser.state }, { from1city: currentuser.city }] },
+            { $and: [{ from2state: currentuser.state }, { from2city: currentuser.city }] },
+            { $and: [{ from3state: currentuser.state }, { from3city: currentuser.city }] }]
+        },
+        {
+            $or: [{ $and: [{ to1state: currentuser.state }, { to1city: currentuser.city }] },
+            { $and: [{ to2state: currentuser.state }, { to2city: currentuser.city }] },
+            { $and: [{ to3state: currentuser.state }, { to3city: currentuser.city }] }]
+        }]
+    })
+    res.render('indexDealer', { drivers })
+})
+
+app.post('/indexdealer', (req, res) => {
+
 })
 
 app.get('/logout', (req, res) => {

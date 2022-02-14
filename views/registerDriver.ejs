@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="/test2.js"></script>
+
     <title>Register</title>
 </head>
 
@@ -58,37 +60,73 @@
                 <input type="text" id="transporterName" name="newDriver[transporterName]" required>
             </div>
 
+            <h3>Interested Routes</h3>
             <div>
-                <label for="route1state">Route 1 State</label>
-                <input type="text" id="route1state" name="newDriver[route1state]" required>
+                <p>From</p>
+                <label for="from1state">State</label>
+                <input type="text" id="from1state" name="newDriver[from1state]" required>
+
+                <label for="from1city">City</label>
+                <input type="text" id="from1city" name="newDriver[from1city]" required>
             </div>
             <div>
-                <label for="route1city">Route 1 City</label>
-                <input type="text" id="route1city" name="newDriver[route1city]" required>
+                <p>To</p>
+                <label for="to1state">State</label>
+                <input type="text" id="to1state" name="newDriver[to1state]" required>
+
+                <label for="to1city">City</label>
+                <input type="text" id="to1city" name="newDriver[to1city]" required>
             </div>
             <div>
-                <label for="route2state">Route 2 State</label>
-                <input type="text" id="route2state" name="newDriver[route2state]" required>
+                <p>From</p>
+                <label for="from2state">State</label>
+                <input type="text" id="from2state" name="newDriver[from2state]" required>
+
+                <label for="from2city">City</label>
+                <input type="text" id="from2city" name="newDriver[from2city]" required>
             </div>
             <div>
-                <label for="route2city">Route 2 State</label>
-                <input type="text" id="route2city" name="newDriver[route2city]" required>
+                <p>To</p>
+                <label for="to2state">State</label>
+                <input type="text" id="to2state" name="newDriver[to2state]" required>
+
+                <label for="to2city">City</label>
+                <input type="text" id="to2city" name="newDriver[to2city]" required>
             </div>
             <div>
-                <label for="route3state">Route 3 State</label>
-                <input type="text" id="route3state" name="newDriver[route3state]" required>
+                <p>From</p>
+                <label for="from3state">State</label>
+                <input type="text" id="from3state" name="newDriver[from3state]" required>
+
+                <label for="from3city">City</label>
+                <input type="text" id="from3city" name="newDriver[from3city]" required>
             </div>
             <div>
-                <label for="route3city">Route 3 State</label>
-                <input type="text" id="route3city" name="newDriver[route3city]" required>
+                <p>To</p>
+                <label for="to3state">State</label>
+                <input type="text" id="to3state" name="newDriver[to3state]" required>
+
+                <label for="to3city">City</label>
+                <input type="text" id="to3city" name="newDriver[to3city]" required>
             </div>
+
+            <select onchange="print_city('state1', this.selectedIndex);" id="sts1" name="newDriver[from1state]"
+                class="form-control" required></select>
+            <select id="state1" class="form-control" name="newDriver[from1city]" required></select>
+
+            <select onchange="print_city('tostate1', this.selectedIndex);" id="tosts1" name="newDriver[to1state]"
+                class="form-control" required></select>
+            <select id="tostate1" class="form-control" name="newDriver[to1state]" required></select>
+
 
             <div class="buttons">
                 <button class="btn btn-primary" type="submit">Submit</button>
                 <button class="btn btn-danger" type="reset">Reset</button>
             </div>
-        </form>
 
+        </form>
+        <script language="javascript">print_state("sts1");</script>
+        <script language="javascript">print_state("tosts1");</script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
