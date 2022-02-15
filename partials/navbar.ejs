@@ -1,0 +1,62 @@
+<%- include('../partials/flash') %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">PWU</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
+                aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0 mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+
+                    <%if(!currentUser){ %>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-decoration-none" id="navbarScrollingDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Register
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="/registerdealer">Dealer</a>
+                                    <a class="dropdown-item" href="/registerdriver">Driver</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-decoration-none" id="navbarScrollingDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Signin
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="/signindealer">Dealer</a>
+                                    <a class="dropdown-item" href="/signindriver">Driver</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <% } else{ %>
+                            <% if(currentUser.type==="Dealer" ) { %>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/indexdealer">Available Drivers</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/alldealerbookings">My Bookings</a>
+                                </li>
+                                <% } %>
+                                    <% if(currentUser.type==="Driver" ) { %>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/alldriverbooked">Bookings for me</a>
+                                        </li>
+                                        <% } %>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/logout">Logout</a>
+                                            </li>
+                                            <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
