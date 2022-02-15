@@ -22,7 +22,7 @@ const DriverSchema = new Schema({
     from3state: String,
     to3city: String,
     to3state: String,
-
+    type: String,
     email: {
         type: String,
         required: true,

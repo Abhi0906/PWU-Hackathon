@@ -42,14 +42,7 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-// passport.use('Driver', new LocalStrategy(Driver.authenticate()));
-// passport.use('Dealer', new LocalStrategy(Dealer.authenticate()));
 
-// passport.serializeUser(Driver.serializeUser());
-// passport.serializeUser(Dealer.serializeUser());
-
-// passport.deserializeUser(Driver.deserializeUser());
-// passport.deserializeUser(Dealer.deserializeUser());
 passport.use('Driver', new LocalStrategy(function (username, password, done) {
     Driver.findOne({ username: username }, function (err, user) {
         // ...
@@ -63,6 +56,8 @@ passport.use('Dealer', new LocalStrategy(function (username, password, done) {
         return done(null, user);
     });
 }));
+
+
 
 passport.serializeUser(function (user, done) {
     done(null, user.id);
@@ -85,20 +80,13 @@ passport.deserializeUser(function (id, done) {
 app.set('view engine', 'ejs');
 app.set('/views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 })
-const isLoggedIn = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-        req.session.returnTo = req.originalUrl;
-        req.flash('error', 'You need to Login First!');
-        return res.redirect('/signin');
-    }
-    next();
-}
 
 app.get('/', (req, res) => {
     res.render('index')
@@ -115,7 +103,7 @@ app.post('/registerdriver', async (req, res) => {
             username: req.body.newDriver.username,
             email: req.body.newDriver.email,
             age: req.body.newDriver.age,
-            truckNumber: req.body.newDriver.truckNumber,
+            truckNumber: req.body.newDriver.truckNo,
             mobileNumber: req.body.newDriver.mobileNo,
             truckCapacity: req.body.newDriver.truckCap,
             transporterName: req.body.newDriver.transporterName,
@@ -131,7 +119,7 @@ app.post('/registerdriver', async (req, res) => {
             from3city: req.body.newDriver.from3city,
             to3state: req.body.newDriver.to3state,
             to3city: req.body.newDriver.to3city,
-
+            type: "Driver"
         })
         const { password } = req.body.newDriver;
         const registeredDriver = await Driver.register(driver, password);
@@ -159,6 +147,7 @@ app.post('/registerdealer', async (req, res) => {
             quantity: req.body.newDealer.quantity,
             city: req.body.newDealer.city,
             state: req.body.newDealer.state,
+            type: "Dealer"
         })
         const { password } = req.body.newDealer;
         const registeredDealer = await Dealer.register(dealer, password);
@@ -170,19 +159,19 @@ app.post('/registerdealer', async (req, res) => {
         res.redirect('/registerdealer')
     }
 })
+app.get('/signindriver', (req, res) => {
+    res.render('signinDriver');
+})
+app.post('/signindriver', passport.authenticate('Driver', { failureFlash: true, failureRedirect: '/signindriver' }), (req, res) => {
+    req.flash('success', 'Welcome Back!');
+    const redirectUrl = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
+})
 
 app.get('/signindealer', (req, res) => {
     res.render('signinDealer');
 })
-
-app.get('/test', (req, res) => {
-    res.render('test');
-})
-
-app.get('/test2', (req, res) => {
-    res.render('test2');
-})
-
 app.post('/signindealer', passport.authenticate('Dealer', { failureFlash: true, failureRedirect: '/signindealer' }), (req, res) => {
     req.flash('success', 'Welcome Back!');
     const redirectUrl = req.session.returnTo || '/indexdealer';
@@ -190,21 +179,17 @@ app.post('/signindealer', passport.authenticate('Dealer', { failureFlash: true, 
     res.redirect(redirectUrl);
 })
 
-// app.post('/signindealerOTP', (req, res) => {
-//     req.flash('success', 'Welcome Back!');
-//     const redirectUrl = req.session.returnTo || '/indexdealer';
-//     delete req.session.returnTo;
-//     res.redirect(redirectUrl);
 
-// })
-
-app.post('/signindealerOTP', (req, res) => {
-    const otp = Math.floor(Math.random() * 10000) + 10000;
+app.post('/signindealerOTP', async (req, res) => {
+    const username = req.body.username;
+    const dealer = await Dealer.findOne({ username: username });
+    const email = dealer.email;
+    const otp = Math.floor(Math.random() * 90000) + 9999;
     const output = `
     <p>You have a new contact request</p>
     <h3>Contact Details</h3>
     <ul>
-      <li>Email: ${req.body.email}</li>
+      <li>Email: ${dealer.email}</li>
     </ul>
     <h3>Message</h3>
     <p>${req.body.message}</p>
@@ -228,7 +213,7 @@ app.post('/signindealerOTP', (req, res) => {
     // setup email data with unicode symbols
     let mailOptions = {
         from: '"PortWithUs" <ironcommander2000@gmail.com>', // sender address
-        to: req.body.email, // list of receivers
+        to: dealer.email, // list of receivers
         subject: 'PortWithUs OTP Verification Mail', // Subject line
         text: 'This is the OTP', // plain text body
         html: output // html body
@@ -243,34 +228,30 @@ app.post('/signindealerOTP', (req, res) => {
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
         // res.render("index", { layout: false, msg: "Email has been sent" });
-        res.render('verifyOtp', { otp });
+        res.render('verifyOtp', { otp, username, email });
     });
 });
 
-app.post('/verifyDealerOTP', (req, res) => {
-    console.log(req.body.otp)
-    console.log(req.body.otpInput)
+app.post('/verifyDealerOTP', async (req, res) => {
+    const username = req.body.username;
+    const dealer = await Dealer.findOne({ username: username });
+    const dealerUsername = dealer.username;
+
     if (req.body.otp === req.body.otpInput) {
-        console.log("Lessssssss GOOOOOO!!!")
-        res.redirect('/')
-    }
-    else {
-        console.log("Go Fuck your self!!!!")
+        req.login(dealer, err => {
+            res.redirect('/');
+        });
+    } else {
         res.redirect('/signindealer');
     }
-
 })
 
-app.get('/signindriver', (req, res) => {
-    res.render('signinDriver');
-})
-
-app.post('/signindriver', passport.authenticate('Driver', { failureFlash: true, failureRedirect: '/signindriver' }), (req, res) => {
-    req.flash('success', 'Welcome Back!');
-    const redirectUrl = req.session.returnTo || '/';
-    delete req.session.returnTo;
-    res.redirect(redirectUrl);
-})
+// app.post('/final', passport.authenticate('Dealer', { failureFlash: true, failureRedirect: '/signindealer' }), (req, res) => {
+//     req.flash('success', 'Welcome Back!');
+//     const redirectUrl = req.session.returnTo || '/';
+//     delete req.session.returnTo;
+//     res.redirect(redirectUrl);
+// })
 
 app.get('/indexdealer', async (req, res) => {
     const currentuser = req.user;
@@ -293,6 +274,27 @@ app.post('/indexdealer', (req, res) => {
 
 })
 
+app.get('/alldealerbookings', async (req, res) => {
+    const currentuser = req.user;
+    const dealer = await Dealer.findById(currentuser._id).populate("drivers");
+    if (!currentuser.type == "Dealer") {
+        req.flash('error', 'You do not have access to view this!');
+        res.redirect('/')
+    }
+    res.render('allDealerBookings', { dealer });
+})
+
+app.get('/alldriverbooked', async (req, res) => {
+    const currentuser = req.user;
+    const driver = await Driver.findById(req.user._id).populate("dealers");
+    if (!currentuser.type == "Driver") {
+        req.flash('error', 'You do not have access to view this!');
+        res.redirect('/')
+    }
+
+    res.render('allDriversBooked', { driver });
+})
+
 app.get('/logout', (req, res) => {
     req.logout();
     req.flash('success', 'Logged Out!');
@@ -308,7 +310,7 @@ app.post('/book', async (req, res) => {
     driver.dealers.push(req.user._id);
     await dealer.save();
     await driver.save();
-    res.redirect('/');
+    res.render('dealerBooking', { dealer, driver });
 })
 
 const port = 3000;

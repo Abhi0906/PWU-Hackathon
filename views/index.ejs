@@ -16,9 +16,25 @@
         <div class="jumbotron">
             <div>
                 <h1><b>Remarkably simple software for the Transport industry.</b></h1>
-                <p>Easily find your Goods Drives or a Dealer for your service, from one simple application.</p>
-                <a class="btn btn-success btn-large p-3" href="/registerdealer">Register As Dealer</a>
-                <a class="btn btn-success btn-large p-3" href="/registerdriver">Register As Driver</a>
+                <p>Easily find
+                    <% if(!currentUser) { %>
+                        Drivers or Dealers
+                        <% } else if(currentUser.type==="Dealer" ) { %>
+                            Driver
+                            <% } else if(currentUser.type==="Driver" ) { %>
+                                Dealers
+                                <% } %>
+                                    for your service, from one simple application.
+                </p>
+                <% if(!currentUser){ %>
+                    <a class="btn btn-success btn-large p-3" href="/registerdealer">Register As Dealer</a>
+                    <a class="btn btn-success btn-large p-3" href="/registerdriver">Register As Driver</a>
+                    <% } else if(currentUser.type==="Dealer" ) { %>
+                        <a class="btn btn-success btn-large p-3" href="/indexdealer">Book Driver</a>
+                        <a class="btn btn-success btn-large p-3" href="/alldealerbookings">My Bookings</a>
+                        <% } else if(currentUser.type==="Driver" ) { %>
+                            <a class="btn btn-success btn-large p-3" href="/alldriverbooked">View Bookings</a>
+                            <% } %>
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

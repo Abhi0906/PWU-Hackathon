@@ -11,6 +11,7 @@ const DealerSchema = new Schema({
     quantity: String,
     city: String,
     state: String,
+    type: String,
     email: {
         type: String,
         required: true,
